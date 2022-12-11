@@ -16,10 +16,10 @@ public class AttachmentContent {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "bytes")
     @Lob
     private byte[] bytes;
 
-    @OneToOne(mappedBy = "content")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "attachment_id", referencedColumnName = "id")
     private Attachment attachment;
 }
