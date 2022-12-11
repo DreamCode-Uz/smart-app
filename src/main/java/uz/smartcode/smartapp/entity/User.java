@@ -8,6 +8,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.persistence.*;
 import java.sql.Timestamp;
@@ -62,7 +63,6 @@ public class User {
     @Column(name = "updated_by")
     @LastModifiedBy
     private UUID updatedBy;
-
     @Column(name = "enabled")
     private boolean enabled = false;
     @Column(name = "account_non_expired")
@@ -103,5 +103,13 @@ public class User {
         this.lastName = lastName;
         this.email = email;
         this.role = role;
+    }
+
+    public String getAvatarUrl() {
+        if (this.attachment == null) return "";
+        return ServletUriComponentsBuilder.fromCurrentContextPath()
+                .path("/api/file/download/")
+                .path(this.attachment.getId().toString())
+                .toUriString();
     }
 }

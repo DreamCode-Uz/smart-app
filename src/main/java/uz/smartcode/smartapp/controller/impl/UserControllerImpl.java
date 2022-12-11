@@ -3,6 +3,7 @@ package uz.smartcode.smartapp.controller.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import uz.smartcode.smartapp.controller.UserController;
 import uz.smartcode.smartapp.dto.UserDto;
 import uz.smartcode.smartapp.service.impl.UserServiceImpl;
@@ -60,5 +61,11 @@ public class UserControllerImpl implements UserController {
     @Override
     public ResponseEntity<?> getBlockUsers() {
         return service.getBlockUsers();
+    }
+
+    @PostMapping("upload/avatar/{userId}")
+    @Override
+    public ResponseEntity<?> uploadAvatar(@PathVariable("userId") UUID userId, @RequestParam("file") MultipartFile file) {
+        return service.uploadAvatar(userId, file);
     }
 }

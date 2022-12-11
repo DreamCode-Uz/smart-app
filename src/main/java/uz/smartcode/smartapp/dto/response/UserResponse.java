@@ -16,13 +16,12 @@ public class UserResponse {
     private final String username;
     private final String email;
     private final String bio;
-
-    private String avatarUrl;
     private final Timestamp createdAt;
     private final Timestamp updatedAt;
     private final UUID createdBy;
     private final UUID updatedBy;
     private final Set<Role> roles;
+    private final String avatar;
 
     public UserResponse(User user) {
         this.id = user.getId();
@@ -36,5 +35,6 @@ public class UserResponse {
         this.email = user.getEmail();
         this.roles = user.getRole();
         this.bio = user.getBio();
+        this.avatar = user.getAvatarUrl();
     }
 }

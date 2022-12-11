@@ -5,11 +5,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import uz.smartcode.smartapp.dao.AttachmentContentRepository;
 import uz.smartcode.smartapp.dao.RoleRepository;
 import uz.smartcode.smartapp.dao.SocialRepository;
 import uz.smartcode.smartapp.dao.UserRepository;
 import uz.smartcode.smartapp.dto.UserDto;
 import uz.smartcode.smartapp.dto.response.UserResponse;
+import uz.smartcode.smartapp.entity.Attachment;
+import uz.smartcode.smartapp.entity.AttachmentContent;
 import uz.smartcode.smartapp.entity.Role;
 import uz.smartcode.smartapp.entity.User;
 import uz.smartcode.smartapp.entity.enums.RoleName;
@@ -28,14 +33,14 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final SocialRepository socialRepository;
 
-    private final AttachmentServiceImpl attachmentService;
+    private final AttachmentContentRepository contentRepository;
 
     @Autowired
-    public UserServiceImpl(UserRepository repository, RoleRepository roleRepository, SocialRepository socialRepository, AttachmentServiceImpl attachmentService) {
+    public UserServiceImpl(UserRepository repository, RoleRepository roleRepository, SocialRepository socialRepository, AttachmentContentRepository contentRepository) {
         this.repository = repository;
         this.roleRepository = roleRepository;
         this.socialRepository = socialRepository;
-        this.attachmentService = attachmentService;
+        this.contentRepository = contentRepository;
     }
 
     @Override
@@ -90,7 +95,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-//    TODO user blocklangan paytda blocklangan user emailiga habar yuborish qo'shish kerak
+    //    TODO user blocklangan paytda blocklangan user emailiga habar yuborish qo'shish kerak
     @Override
     public ResponseEntity<?> userDeactivate(UUID userId, boolean isLocked) {
         Optional<User> optionalUser = repository.findById(userId);
@@ -104,5 +109,31 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> getBlockUsers() {
         List<User> blockUsers = repository.findAllByAccountNonLocked(false);
         return ok(blockUsers.stream().map(UserResponse::new));
+    }
+
+    @Override
+    public ResponseEntity<?> uploadAvatar(UUID userId, MultipartFile file) {
+        Optional<User> optionalUser = repository.findById(userId);
+        if (!optionalUser.isPresent()) return status(HttpStatus.NOT_FOUND).body("User not found");
+        User user = optionalUser.get();
+        String fileName = StringUtils.cleanPath(file.getOriginalFilename());
+        try {
+            if (fileName.contains("..")) return badRequest().body("Filename contains invalid path sequence");
+            Attachment attachment = new Attachment(fileName, file.getContentType(), file.getSize());
+            AttachmentContent content = new AttachmentContent();
+            attachment.setContent(content);
+            content.setBytes(file.getBytes());
+            content.setAttachment(attachment);
+            AttachmentContent savedAttachment = contentRepository.save(content);
+            user.setAttachment(savedAttachment.getAttachment());
+            return status(HttpStatus.CREATED).body(new UserResponse(user));
+        } catch (Exception e) {
+            return badRequest().build();
+        }
+    }
+
+    @Override
+    public ResponseEntity<?> removeAvatar(UUID userId) {
+        return null;
     }
 }
