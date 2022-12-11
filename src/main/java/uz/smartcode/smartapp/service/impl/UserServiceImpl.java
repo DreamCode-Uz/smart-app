@@ -28,11 +28,14 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
     private final SocialRepository socialRepository;
 
+    private final AttachmentServiceImpl attachmentService;
+
     @Autowired
-    public UserServiceImpl(UserRepository repository, RoleRepository roleRepository, SocialRepository socialRepository) {
+    public UserServiceImpl(UserRepository repository, RoleRepository roleRepository, SocialRepository socialRepository, AttachmentServiceImpl attachmentService) {
         this.repository = repository;
         this.roleRepository = roleRepository;
         this.socialRepository = socialRepository;
+        this.attachmentService = attachmentService;
     }
 
     @Override
@@ -94,7 +97,7 @@ public class UserServiceImpl implements UserService {
         if (!optionalUser.isPresent()) return notFound().build();
         User user = optionalUser.get();
         user.setAccountNonLocked(!isLocked);
-        return status(HttpStatus.CREATED).body(repository.save(user));
+        return status(HttpStatus.CREATED).body(new UserResponse(repository.save(user)));
     }
 
     @Override

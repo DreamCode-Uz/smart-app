@@ -16,6 +16,8 @@ public class UserResponse {
     private final String username;
     private final String email;
     private final String bio;
+
+    private String avatarUrl;
     private final Timestamp createdAt;
     private final Timestamp updatedAt;
     private final UUID createdBy;

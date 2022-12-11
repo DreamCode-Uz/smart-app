@@ -44,6 +44,9 @@ public class User {
     @Column(name = "bio")
     private String bio;
 
+    @OneToOne
+    private Attachment attachment;
+
     @Column(name = "created_at", updatable = false)
     @CreationTimestamp
     private Timestamp createdAt;

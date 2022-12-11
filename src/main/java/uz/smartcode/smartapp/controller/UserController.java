@@ -15,4 +15,8 @@ public interface UserController {
     ResponseEntity<?> updateUser(UUID userId, UserDto dto);
 
     ResponseEntity<?> deleteUser(UUID userId);
+
+    ResponseEntity<?> blockUser(UUID userId, boolean status);
+
+    ResponseEntity<?> getBlockUsers();
 }

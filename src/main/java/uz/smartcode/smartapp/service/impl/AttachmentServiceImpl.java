@@ -41,7 +41,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         Optional<Attachment> optionalAttachment = attachmentRepository.findById(fileId);
         if (!optionalAttachment.isPresent()) return status(NOT_FOUND).body("The file does not exist");
         String downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
-                .path("/download/")
+                .path("/api/file/download/")
                 .path(fileId.toString())
                 .toUriString();
         return ok(new AttachmentResponse(optionalAttachment.get(), downloadUrl));
@@ -58,7 +58,11 @@ public class AttachmentServiceImpl implements AttachmentService {
             content.setBytes(file.getBytes());
             content.setAttachment(attachment);
             AttachmentContent savedAttachment = contentRepository.save(content);
-            return ok(new AttachmentResponse(savedAttachment.getAttachment()));
+            String downloadUrl = ServletUriComponentsBuilder.fromCurrentContextPath()
+                    .path("/api/file/download/")
+                    .path(savedAttachment.getAttachment().getId().toString())
+                    .toUriString();
+            return ok(new AttachmentResponse(savedAttachment.getAttachment(), downloadUrl));
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
             return badRequest().build();

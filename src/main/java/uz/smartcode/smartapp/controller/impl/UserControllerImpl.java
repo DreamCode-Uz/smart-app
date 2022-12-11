@@ -40,7 +40,7 @@ public class UserControllerImpl implements UserController {
 
     @PutMapping("/{userId}")
     @Override
-    public ResponseEntity<?> updateUser(@PathVariable UUID userId,@RequestBody UserDto dto) {
+    public ResponseEntity<?> updateUser(@PathVariable UUID userId, @RequestBody UserDto dto) {
         return service.editUser(userId, dto);
     }
 
@@ -48,5 +48,17 @@ public class UserControllerImpl implements UserController {
     @Override
     public ResponseEntity<?> deleteUser(@PathVariable UUID userId) {
         return service.deleteUser(userId);
+    }
+
+    @PostMapping("/{userId}/block/{isLocked}")
+    @Override
+    public ResponseEntity<?> blockUser(@PathVariable("userId") UUID userId,@PathVariable("isLocked") boolean status) {
+        return service.userDeactivate(userId, status);
+    }
+
+    @GetMapping("/block")
+    @Override
+    public ResponseEntity<?> getBlockUsers() {
+        return service.getBlockUsers();
     }
 }
